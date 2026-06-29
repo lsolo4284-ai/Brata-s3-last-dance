@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRATA S3 - KAMI IZIN PAMIT</title>
+    <style>
+        /* --- GENERAL STYLE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #141414;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* --- VIDEO BACKGROUND COMPONENT --- */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Lapisan Gradasi Gelap ala Netflix */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(20,20,20,0.95) 100%);
+            z-index: -1;
+        }
+
+        /* --- NAVBAR (RESPONSIF) --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            color: #E50914;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+        }
+
+        nav ul li a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: 0.3s;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        nav ul li a.active, nav ul li a:hover {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* --- PAGES LAYOUT --- */
+        .page {
+            padding: 90px 5% 40px 5%;
+            min-height: 100vh;
+            display: none;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        /* --- HOME PAGE (HERO DENGAN RESPONSIF TEXT & VIDEO FALLBACK) --- */
+        .hero {
+            min-height: 65vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background: url('') no-repeat center top/cover;            
+            padding: 40px 0;
+            margin-bottom: 20px;
+            background-color: transparent; 
+        }
+
+        .tagline {
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            color: #aaaaaa;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 4rem); 
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .hero .meta {
+            font-size: 12px;
+            color: #46d369;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .hero .meta span {
+            color: #aaa;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        .hero p {
+            width: 100%;
+            max-width: 650px;
+            font-size: clamp(0.85rem, 2.5vw, 1.05rem); 
+            line-height: 1.6;
+            color: #cccccc;
+            margin-bottom: 25px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .hero-buttons button {
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .btn-play { background-color: #ffffff; color: #000000; }
+        .btn-play:hover { background-color: #e5e5e5; }
+        .btn-list { background-color: rgba(109, 109, 110, 0.7); color: white; }
+        .btn-list:hover { background-color: rgba(109, 109, 110, 0.4); }
+
+        /* --- SOSMED SECTION --- */
+        .sosmed-section {
+            margin-top: 20px;
+        }
+
+        .sosmed-section h3 {
+            border-left: 4px solid #E50914;
+            padding-left: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 18px;
+        }
+
+        .sosmed-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 450px;
+        }
+
+        .sosmed-card {
+            background-color: #181818;
+            border: 1px solid #333;
+            padding: 15px 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .sosmed-card h4 { 
+            margin-bottom: 5px; 
+            font-size: 14px;
+        }
+        
+        .sosmed-card p {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .btn-follow {
+            display: block;
+            padding: 8px 10px;
+            background-color: #E50914;
+            color: white;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .btn-follow:hover { background-color: #b80710; }
+
+        /* --- SISWA PAGE --- */
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            border-left: 4px solid #E50914;
+            padding-left: 10px;
+        }
+
+        .grid-siswa {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .card-siswa {
+            background-color: #181818;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .card-siswa:hover {
+            transform: scale(1.03);
+            border-color: #E50914;
+        }
+
+        .foto-box {
+            width: 100%;
+            height: 180px;
+            background-color: #E50914;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .foto-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-siswa {
+            padding: 10px;
+        }
+
+        .info-siswa .eps {
+            color: #E50914;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .info-siswa .nama {
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- PIKET PAGE --- */
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .day-column {
+            background-color: #181818;
+            border-top: 3px solid #E50914;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .day-column h3 {
+            margin-bottom: 10px;
+            color: #E50914;
+            font-size: 16px;
+        }
+
+        .day-column ul {
+            list-style: none;
+        }
+
+        .day-column ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* --- KENANGAN PAGE --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            background-color: #181818;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .gallery-desc {
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        /* --- ZOOM MODAL LIGHTBOX SYSTEM --- */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+            object-fit: contain;
+        }
+
+        .image-modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .close-modal:hover {
+            color: #E50914;
+        }
+
+        /* --- MEDIA QUERIES TABLET & LAPTOP --- */
+        @media (min-width: 768px) {
+            header { padding: 20px 6%; }
+            nav ul { gap: 25px; }
+            nav ul li a { font-size: 14px; }
+            
+            .page { padding: 110px 6% 50px 6%; }
+
+            .hero { min-height: 75vh; padding: 0; background: transparent; }
+            .hero p { width: 80%; }
+            .hero-buttons button { flex: none; width: auto; }
+
+            .sosmed-grid { gap: 20px; }
+            .sosmed-card h4 { font-size: 16px; }
+            .sosmed-card p { font-size: 13px; }
+            .btn-follow { font-size: 12px; }
+
+            .grid-siswa { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+            .foto-box { height: 240px; }
+            .info-siswa .nama { font-size: 16px; }
+            
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+            .gallery-item img { height: 200px; }
+            .gallery-desc { font-size: 14px; }
+        }
+
+        @media (min-width: 1024px) {
+            .hero { min-height: 80vh; }
+            .hero p { width: 50%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-background">
+        <video id="bgVideo" autoplay loop muted playsinline>
+            <source src="img/THE AND.mp4" type="video/mp4">
+            Browser Anda tidak mendukung komponen video.
+        </video>
+    </div>
+
+    <div class="overlay"></div>
+
+    <header>
+        <div class="logo">BRATA S3</div>
+        <nav>
+            <ul>
+                <li><a onclick="switchPage('beranda')" id="nav-beranda" class="active">BERANDA</a></li>
+                <li><a onclick="switchPage('nama-pasukan')" id="nav-nama-pasukan">NAMA PASUKAN</a></li>
+                <li><a onclick="switchPage('posisi')" id="nav-posisi">POSISI</a></li>
+                <li><a onclick="switchPage('kenangan')" id="nav-kenangan">KENANGAN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- BERANDA -->
+    <div id="beranda" class="page active-page">
+        <div class="hero">
+            <div class="tagline">ORIGINAL SERIES KAMI</div>
+            <h1>KAMI IZIN PAMIT</h1>
+            <div class="meta">98% Match <span>2026</span> <span>2 Seasons</span></div>
+            <p>Heyy bro... tidak terasa ya 2 tahun kita bersama kita mengalami begitu banyak kejadian, mungkin dalam 2 tahun kebersamaan tersebut kita sering sekali mengalami susah senang bersama serta kita sempet merasakan rasanya putus atas saat kita yang ditinggal oleh seseorang. namun pada saat kita putus asa itulah kita saling bahu membahu hingga membuat kita mungkin menjadi lebih dekat seperti sekarang ini mungkin itu yang dapat saya sampaikan, sampai ketemu lagi dengan menggunakan seragam ataupun almet impian kuliah yang kita impikan.</p>
+            <div class="hero-buttons">
+                <button class="btn-play" onclick="forcePlayAudio()">▶ Putar</button>
+                <button class="btn-list">+ My List</button>
+            </div>
+        </div>
+
+        <div class="sosmed-section">
+            <h3>Ikuti Kami</h3>
+            <div class="sosmed-grid">
+                <div class="sosmed-card">
+                    <h4>Instagram</h4>
+                    <p>@batak.8</p>
+                    <a href="https://www.instagram.com/batak.8?igsh=MXBudW1lcDZic3JrNg==" class="btn-follow">FOLLOW</a>
+                </div>
+                <div class="sosmed-card">
+                    <h4>TikTok</h4>
+                    <p>@b.a.t.a.k08</p>
+                    <a href="https://www.tiktok.com/@b.a.t.a.k08?_r=1&_t=ZS-97bYOVRF5RB" class="btn-follow">FOLLOW</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAMA PASUKAN -->
+    <div id="nama-pasukan" class="page">
+        <h2 class="section-title">Daftar Nama Pasukan</h2>
+        <div class="grid-siswa">
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/danton.jpg" alt="Daffa Hilbram Subagja"></div>
+                <div class="info-siswa">
+                    <div class="eps">DANTON</div>
+                    <div class="nama">Daffa Hilbram Subagja</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/fajrul.jpg" alt="Fajrul Hakam Al-Baeny"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Fajrul Hakam Al-Baeny</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/fakhri.jpg" alt="Fakhri Fadhlurrahman Sanyoto"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Fakhri Fadhlurrahman Sanyoto</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/arden.jpg" alt="Arden Weka Dharma Ramadhan"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Arden Weka Dharma Ramadhan</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/pasha.jpg" alt="Pasha Oktara Trianandra"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Pasha Oktara Trianandra</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/zeva.jpg" alt="Zevanya Anindiya Putri"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Zevanya Anindiya Putri</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/aisyah.jpg" alt="Aisya Sukma Ahhadina"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Aisya Sukma Ahhadina</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/adnan.jpg" alt="Adnan Hermawan"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Adnan Hermawan</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/pija.jpg" alt="Fiza Amelia"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Fiza Amelia</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/safa.jpg" alt="Shafa Fajdriya Zafina"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Shafa Fajdriya Zafina</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/imel.jpg" alt="Sartika Imelda"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Sartika Imelda</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/cika.jpg" alt="Aura Cyka Putri Delova"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Aura Cyka Putri Delova</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/jose.jpg" alt="Jocelyn Felicia Hutabarat"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Jocelyn Felicia Hutabarat</div>                    
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/itin.jpg" alt="Christin Madala Sihaga Baeha"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Christin Madala Sihaga Baeha</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/vanesa.jpg" alt="Vanesa Azra Sabirah"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Vanesa Azra Sabirah</div>
+                </div>
+            </div>
+            <div class="card-siswa" onclick="zoomImage(this.querySelector('img'))">
+                <div class="foto-box"><img src="img/valen.jpg" alt="Valen Valoka"></div>
+                <div class="info-siswa">
+                    <div class="eps">PASUKAN</div>
+                    <div class="nama">Valen Valoka</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POSISI -->
+    <div id="posisi" class="page">
+        <h2 class="section-title">Letak Posisi Pasukan</h2>
+        <div class="roster-grid">
+            <div class="day-column">
+                <h3>DANTON</h3>
+                <ul>
+                    <li>Daffa Hilbram Subagja</li>
+                </ul>
+            </div>
+            <div class="day-column">
+                <h3>BANJAR 1</h3>
+                <ul>
+                    <li>Fajrul Hakam Al-Baeny</li>
+                    <li>Fakhri Fadhlurrahman Sanyoto</li>
+                    <li>Arden Weka Dharma Ramadhan</li>
+                </ul>
+            </div>
+            <div class="day-column">
+                <h3>BANJAR 2</h3>
+                <ul>
+                    <li>Pasha Oktara Trianandra</li>
+                    <li>Zevanya Anindiya Putri</li>
+                    <li>Aisya Sukma Ahhadina</li>
+                </ul>
+            </div>
+            <div class="day-column">
+                <h3>BANJAR 3</h3>
+                <ul>
+                    <li>Adnan Hermawan</li>
+                    <li>Fiza Amelia</li>
+                    <li>Shafa Fajdriya Zafina</li>
+                </ul>
+            </div>
+            <div class="day-column">
+                <h3>BANJAR 4</h3>
+                <ul>
+                    <li>Sartika Imelda</li>
+                    <li>Aura Cyka Putri Delova</li>
+                    <li>Jocelyn Felicia Hutabarat</li>
+                </ul>
+            </div>
+            <div class="day-column">
+                <h3>BANJAR 5</h3>
+                <ul>
+                    <li>Christin Madala Sihaga Baeha</li>
+                    <li>Vanesa Azra Sabirah</li>
+                    <li>Valen Valoka</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- KENANGAN -->
+    <div id="kenangan" class="page">
+        <h2 class="section-title">Memories (Galeri Foto)</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/1.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Gabungan</div>
+            </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/2.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Gabungan</div>
+            </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/3.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Gabungan</div>
+            </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/4.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc"> GUBERNUR </div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/5.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">  Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/6.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/7.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/8.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/9.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/10.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+                </div>
+            <div class="gallery-item" onclick="zoomImage(this.querySelector('img'))">
+                <img src="img/11.jpg" alt="Foto Kenangan">
+                <div class="gallery-desc">Foto Perebutan Tiket kejurda</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WRAPPER MODAL UNTUK DETEL ZOOM FOTO -->
+    <div id="zoomModal" class="image-modal" onclick="closeZoom()">
+        <span class="close-modal" onclick="closeZoom()">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <script>
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active-page');
+            });
+
+            const navLinks = document.querySelectorAll('nav ul li a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const targetPage = document.getElementById(pageId);
+            const targetNav = document.getElementById('nav-' + pageId);
+
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+            }
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
+        }
+
+        const video = document.getElementById('bgVideo');
+        
+        function membukaSuara() {
+            if (video) {
+                video.muted = false;
+                var playPromise = video.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        console.log("Video berhasil diputar dengan suara.");
+                    }).catch(error => {
+                        console.log("Autoplay dicegah oleh browser, dimute kembali:", error);
+                        video.muted = true;
+                        video.play();
+                    });
+                }
+            }
+        }
+
+        // Event listener interaksi pengguna pertama kali
+        window.addEventListener('click', membukaSuara, { once: true });
+        window.addEventListener('touchstart', membukaSuara, { once: true });
+
+        // Fungsi paksa dari tombol Putar
+        function forcePlayAudio() {
+            if (video) {
+                video.muted = false;
+                video.play().catch(err => console.log("Gagal memutar audio:", err));
+            }
+        }
+
+        /* --- ZOOM IMAGE FUNCTIONS --- */
+        const modal = document.getElementById('zoomModal');
+        const modalImg = document.getElementById('modalImg');
+
+        function zoomImage(imgElement) {
+            if(imgElement && imgElement.src) {
+                modal.style.display = "flex";
+                // Menggunakan setTimeout sekilas agar transisi opacity CSS berjalan mulus
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+                modalImg.src = imgElement.src;
+            }
+        }
+
+        function closeZoom() {
+            modal.classList.remove('show');
+            // Menunggu transisi selesai sebelum menghilangkan display
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 300);
+        }
+    </script>
+</body>
+</html>
